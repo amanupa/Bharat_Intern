@@ -1,0 +1,203 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+void main(List<String> args) {
+  runApp(const TempConverter());
+}
+
+class TempConverter extends StatefulWidget {
+  const TempConverter({super.key});
+
+  @override
+  State<TempConverter> createState() => _TempConverterState();
+}
+
+class _TempConverterState extends State<TempConverter> {
+  var userInput = TextEditingController();
+  var Output = "";
+
+  celsiusToFahrenheit() {
+    double? celsius = double.tryParse(userInput.text);
+    if (celsius == null) {
+      setState(() {
+        Output = 'Value is empty.';
+      });
+    } else {
+      var fahrenheit = (9 / 5) * celsius + 32;
+      setState(() {
+        Output = '$celsius ºC = $fahrenheit ºF';
+      });
+    }
+  }
+
+  FahrenheitTocelsius() {
+    double? fahrenheit = double.tryParse(userInput.text);
+    if (fahrenheit == null) {
+      setState(() {
+        Output = 'Value is empty.';
+      });
+    } else {
+      var celsius = (fahrenheit - 32) * 5 / 9;
+      setState(() {
+        Output = '$fahrenheit ºF = $celsius ºC';
+      });
+    }
+  }
+
+  reset() {
+    setState(() {
+      Output = '';
+      SystemChannels.textInput.invokeMethod('TextInput.hide');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+            actions: const [
+              Icon(
+                Icons.thermostat,
+                size: 36,
+                color: Colors.white,
+              )
+            ],
+            title: const Text(
+              "Temperature",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.normal,
+              ),
+            )),
+        body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage(
+                          "assets/images/weather-forecast-background.jpg"),
+                      fit: BoxFit.cover)),
+            ),
+            Center(
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.all(10),
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  width: double.infinity,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                              image: DecorationImage(
+                                  opacity: 0.5,
+                                  image: AssetImage(
+                                      "assets/images/pngtree-simple-thermometer-png-clipart_255105.jpg"),
+                                  fit: BoxFit.fill)),
+                        ),
+                      ),
+                      Card(
+                        color: Colors.transparent.withOpacity(0),
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        child: Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                child: Form(
+                                    child: TextFormField(
+                                  decoration: const InputDecoration(
+                                      label: Text(
+                                    "Enter the temperature",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white),
+                                  )),
+                                  controller: userInput,
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(),
+                                )),
+                              ),
+                              Container(
+                                decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                        colors: Colors.primaries)),
+                                margin: const EdgeInsets.all(10),
+                                child: Center(
+                                  child: Text(
+                                    Output,
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.all(5),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    OutlinedButton(
+                                        onPressed: () {
+                                          celsiusToFahrenheit();
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                            elevation: 10,
+                                            foregroundColor: Colors.orange),
+                                        child: const Text("fahrenheit")),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    OutlinedButton(
+                                        onPressed: () {
+                                          reset();
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                            elevation: 10,
+                                            foregroundColor: Colors.red),
+                                        child: const Text("Reset")),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    OutlinedButton(
+                                        onPressed: () {
+                                          FahrenheitTocelsius();
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                            elevation: 10,
+                                            foregroundColor: Colors.orange),
+                                        child: const Text("Celsius")),
+                                  ],
+                                ),
+                              ),
+                              /*const SizedBox(
+                                  height: 20,
+                                ),
+                                */
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
